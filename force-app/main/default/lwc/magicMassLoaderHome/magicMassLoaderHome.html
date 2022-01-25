@@ -1,0 +1,18 @@
+<template>
+    <lightning-card  variant="Narrow"  title="Start by uploading your file" icon-name="standard:upload">
+        <lightning-input type="file" 
+                            label="Attachment" 
+                            required 
+                            message-when-value-missing="Please upload a file"
+                            onchange={cacheUploadData}
+                            accept=".txt, .csv"
+        >
+        </lightning-input>
+        <template if:true={uploadData}>
+            <p>{uploadData.filename}</p>
+            <p>Num of lines : {uploadData.numOfLines}</p>
+            <p>&nbsp;</p>
+            <lightning-button label="Start Rolling" title="Start Rolling" onclick={startUpload} class="slds-m-left_x-small"></lightning-button>
+        </template>
+    </lightning-card>
+</template>
