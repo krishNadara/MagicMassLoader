@@ -11,26 +11,24 @@ public with sharing class MagicMassLoaderController {
         // removing the first line with labels, from the data
         dataLines.remove(0);
 
-
         Map<Integer, FieldStruct> fieldMapped = new Map<Integer,FieldStruct>();
-        Map<String,String> fieldLabelToApi = new Map<String,String>();
+        Map<String,Schema.DescribeFieldResult> fieldLabelToApi = new Map<String,Schema.DescribeFieldResult>();
 
         for(String field:mapField.keySet()) {
-            fieldLabelToApi.put(mapField.get(field).getDescribe().getLabel().toLowerCase(),field);
+            Schema.DescribeFieldResult fieldDesc = mapField.get(field).getDescribe();
+            fieldLabelToApi.put(fieldDesc.getLabel().toLowerCase(),fieldDesc);
         }
-        System.debug(fieldLabelToApi);
 
         for(Integer i=0;i<labels.size();i++){
             String fieldLabel = labels[i].toLowerCase();
-            String fieldApiName = fieldLabelToApi.get(fieldLabel);
             if(fieldLabelToApi.containsKey(fieldLabel)) {
-                // if the field specified is not updateable, we will just skip it, except if it is Id.
+                String fieldApiName = fieldLabelToApi.get(fieldLabel).getName() ;
+                // if the field specified is not updateable, we will just skip it by associating a null value, except if it is Id.
                 // this is useful in case for example in an extract there is Id, Case number as reference 
                 // but we don't want to update it
-                if(mapField.get(fieldApiName).getDescribe().updateable || fieldApiName == 'Id') { 
-                    FieldStruct currentField = new FieldStruct();
-                    currentField.apiName = fieldApiName;
-                    currentField.label = labels[i];
+                Schema.DescribeFieldResult fieldDesc = fieldLabelToApi.get(fieldLabel);
+                if(fieldDesc.updateable || fieldApiName == 'Id') { 
+                    FieldStruct currentField = new FieldStruct(labels[i], fieldApiName);
                     fieldMapped.put(i,currentField);
                 } else {
                     fieldMapped.put(i,null);
@@ -69,7 +67,13 @@ public with sharing class MagicMassLoaderController {
     }
 
     private class FieldStruct {
-        public string label;
-        public String apiName;
+        public string label { get; private set;}
+        public String apiName { get; private set;}
+
+        public FieldStruct(String label, String apiName) {
+            this.label = label;
+            this.apiName = apiName;
+
+        }
     }
 }

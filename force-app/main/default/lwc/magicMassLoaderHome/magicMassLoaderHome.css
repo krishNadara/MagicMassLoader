@@ -1,0 +1,28 @@
+[app_flexipage-header_header-host]{
+    display:none;
+}
+
+.main {
+    text-align: center;
+    font-size: 1rem;
+}
+
+.dataSummary {
+    font-size: 0.7rem;
+    font-style: italic;
+    font-weight: bold;
+    background: rgb(179 225 255 / 60%);
+    text-align: center;
+    margin: auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: 60%;
+    border-radius: 8px;
+}
+
+.fileSummaryLabel {
+    font-size: 1rem;
+    text-align: left;
+    padding-bottom: 0.5rem;
+}
