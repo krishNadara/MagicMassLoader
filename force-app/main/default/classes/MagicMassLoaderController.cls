@@ -1,7 +1,7 @@
 public with sharing class MagicMassLoaderController {
 
     @AuraEnabled
-    public static void loadMassData(String base64) {
+    public static LoadResult loadMassData(String base64) {
         List<String> dataLines = EncodingUtil.base64Decode(base64).toString().split('[\n\r]');
 
         Map<String,Schema.SObjectType> objectsMap  = Schema.getGlobalDescribe();
@@ -36,9 +36,9 @@ public with sharing class MagicMassLoaderController {
 
             }
         }
-        System.debug(fieldMapped);
 
-        List<SObject> objToUpdate = new List<SObject>();
+        // object map so if there is several time same Id in the document, we take only one value, and the last
+        Map<Id,Sobject> recordsMap = new Map<Id,Sobject>();
         for(String line:dataLines) {
             Sobject so = s.newSObject();
             List<String> values = line.split(';');
@@ -50,20 +50,41 @@ public with sharing class MagicMassLoaderController {
             }
 
             Integer index = 0;
+            Id objectId;
             // To improve, now based on the order of the values.. Is it a long term solution?
             for(String value:values) {
                 if(fieldMapped.get(index) != null) {
+                    if(fieldMapped.get(index).apiName == 'Id') {
+                        objectId = value;
+                    }
+
                     so.put(fieldMapped.get(index).apiName,value);
                 }
                 index++;
             }
-            objToUpdate.add(so);
+            recordsMap.put(objectId,so);
         }
 
-        if(objToUpdate.size() > 0) {
-            update objToUpdate;
+        Integer linesSuccess = 0;
+        Integer linesError = 0;
+        Integer recordsProcessed = recordsMap.values().size();
+        System.debug(recordsMap.values());
+        System.debug(recordsProcessed);
+        if(recordsMap.keyset().size() > 0) {
+            List<Database.SaveResult> results = Database.update(recordsMap.values(), false);
+
+            for(Database.SaveResult result:results) {
+                if(result.isSuccess()) {
+                    linesSuccess++;
+                } else {
+                    linesError++;
+                }
+            }
         }
 
+        LoadResult resultSum = new LoadResult(recordsMap.values().size(),linesSuccess,linesError);
+
+        return resultSum;
     }
 
     private class FieldStruct {
@@ -73,6 +94,22 @@ public with sharing class MagicMassLoaderController {
         public FieldStruct(String label, String apiName) {
             this.label = label;
             this.apiName = apiName;
+
+        }
+    }
+
+    private class LoadResult {
+        @AuraEnabled
+        public Integer linesProcessed { get; private set;}
+        @AuraEnabled
+        public Integer numSuccess { get; private set;}
+        @AuraEnabled
+        public Integer numFailure { get; private set;}
+
+        public LoadResult(Integer linesProcessed, Integer numSuccess, Integer numFailure) {
+            this.linesProcessed = linesProcessed;
+            this.numSuccess = numSuccess;
+            this.numFailure = numFailure;
 
         }
     }

@@ -10,6 +10,12 @@
                                     accept=".txt, .csv"
                 >
                 </lightning-input>
+
+                <template if:true={loading}>
+                    <p>Loading</p>
+                    <lightning-progress-ring value={progress} variant="active-step"> </lightning-progress-ring>
+                </template>
+
                 <template if:true={uploadData}>
                     <div class="dataSummary">
                         <p class="fileSummaryLabel">File Summary</p>
@@ -17,7 +23,19 @@
                         <p>Num of lines : {uploadData.numOfLines}</p>
                         <p>&nbsp;</p>
                     </div>
-                    <lightning-button label="Start Rolling" title="Start Rolling" onclick={startUpload} class="slds-m-left_x-small"></lightning-button>
+
+                    <template if:true={startRolling}>
+                        <lightning-button label="Start Rolling" title="Start Rolling" onclick={startUpload} class="slds-m-left_x-small"></lightning-button>
+                    </template>
+                </template>
+
+                <template if:true={loadResult}>
+                    <div class="uploadSummary">
+                        <p class="fileSummaryLabel">Records Processed : {loadResult.linesProcessed}</p>
+                        <p>Success : {loadResult.numSuccess}</p>
+                        <p>Errors : {loadResult.numFailure}</p>
+                        <p>&nbsp;</p>
+                    </div>
                 </template>
             </div>
         </lightning-card>
