@@ -1,5 +1,5 @@
 import { LightningElement,api } from 'lwc';
-import loadData from '@salesforce/apex/MagicMassLoaderController.loadMassData'
+import loadData from '@salesforce/apex/MagicMassLoaderController.loadFileData'
 
 export default class MagicMassLoaderHome extends LightningElement {
     @api
