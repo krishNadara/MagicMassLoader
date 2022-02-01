@@ -1,5 +1,5 @@
 global interface IMagicMassLoader {
 
-    MagicMassLoaderWrappers.LoadResult loadMassData(String base64);
+    MagicMassLoaderWrappers.LoadResult loadMassData(String targetObject, String base64);
     
 }

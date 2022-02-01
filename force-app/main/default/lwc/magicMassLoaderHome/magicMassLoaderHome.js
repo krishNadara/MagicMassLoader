@@ -1,14 +1,17 @@
-import { LightningElement,api } from 'lwc';
+import { LightningElement,api,track,wire } from 'lwc';
 import loadData from '@salesforce/apex/MagicMassLoaderController.loadFileData'
+import getConfigs from '@salesforce/apex/MagicMassLoaderController.getObjectAllowed'
 
 export default class MagicMassLoaderHome extends LightningElement {
     @api
     myRecordId;
+    @track objectsAllowed;
 
     get acceptedFormats() {
         return ".txt, .csv";
     }
 
+    targetObject
     loading
     progress
     loadResult
@@ -40,10 +43,27 @@ export default class MagicMassLoaderHome extends LightningElement {
         reader.readAsDataURL(file);
     }
 
+    @wire(getConfigs)
+    wiredConfig({ error, data }) {
+        if (data) {
+            console.log('error => ', JSON.stringify(error));
+            console.log('result => ', JSON.stringify(data));
+            this.objectsAllowed = data;
+        } else if (error) {
+            this.error = error;
+            console.error('error => ', error); // error handling
+        }
+    }
+
+    handleChange(event) {
+        this.targetObject = event.detail.value;
+    }
+
     startUpload(){
         const {base64, filename} = this.uploadData;
+        const targetObject = this.targetObject;
 
-        loadData({ base64}).then(result=>{
+        loadData({ targetObject, base64}).then(result=>{
             this.loadResult = result
             this.startRolling = false
         })

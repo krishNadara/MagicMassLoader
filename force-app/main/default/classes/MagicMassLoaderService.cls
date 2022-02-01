@@ -1,10 +1,10 @@
 public with sharing class MagicMassLoaderService implements IMagicMassLoader {
 
-    public MagicMassLoaderWrappers.LoadResult loadMassData(String base64) {
+    public MagicMassLoaderWrappers.LoadResult loadMassData(String targetObject, String base64) {
         List<String> dataLines = EncodingUtil.base64Decode(base64).toString().split('[\n\r]');
 
         Map<String,Schema.SObjectType> objectsMap  = Schema.getGlobalDescribe();
-        Schema.SObjectType s = objectsMap.get('Case');
+        Schema.SObjectType s = objectsMap.get(targetObject);
         Map<String,Schema.SObjectField> mapField = s.getDescribe().fields.getMap();
         List<String> labels = dataLines[0].split(';');
         // removing the first line with labels, from the data
@@ -84,6 +84,14 @@ public with sharing class MagicMassLoaderService implements IMagicMassLoader {
         MagicMassLoaderWrappers.LoadResult resultSum = new MagicMassLoaderWrappers.LoadResult(recordsProcessed,linesSuccess,linesError);
 
         return resultSum;
+    }
+
+    public List<Magic_Mass_Loader_Configuration__mdt> getConfigurations() {
+        return [SELECT DeveloperName, Modes_Allowed__c, 
+                        Magic_Mass_Loader_Object__r.DeveloperName, 
+                        Magic_Mass_Loader_Object__r.Object_API_Name__c 
+                FROM  Magic_Mass_Loader_Configuration__mdt 
+                WHERE isActive__c = true];
     }
 
     private class FieldStruct {

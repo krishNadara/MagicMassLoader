@@ -7,6 +7,11 @@
     font-size: 1rem;
 }
 
+.main .inputObjects {
+    width: 60%;
+    margin: auto;
+}
+
 .dataSummary {
     font-size: 0.7rem;
     font-style: italic;
