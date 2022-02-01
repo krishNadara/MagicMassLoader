@@ -2,6 +2,18 @@
 
         <lightning-card variant="Narrow"  title="Magic Mass Loader" icon-name="standard:account">
             <div class="main">
+                <template if:true={objectsAllowed}>
+                    <lightning-combobox
+                        name="Object"
+                        label="Object"
+                        value={value}
+                        placeholder="Select an Object"
+                        options={objectsAllowed}
+                        onchange={handleChange}
+                        class="inputObjects" >
+                    </lightning-combobox>
+                </template>
+
                 <lightning-input type="file" 
                                     label="Attachment" 
                                     required 
