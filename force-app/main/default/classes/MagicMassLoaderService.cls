@@ -67,8 +67,7 @@ public with sharing class MagicMassLoaderService implements IMagicMassLoader {
         Integer linesSuccess = 0;
         Integer linesError = 0;
         Integer recordsProcessed = recordsMap.values().size();
-        System.debug(recordsMap.values());
-        System.debug(recordsProcessed);
+
         if(recordsMap.keyset().size() > 0) {
             List<Database.SaveResult> results = Database.update(recordsMap.values(), false);
 

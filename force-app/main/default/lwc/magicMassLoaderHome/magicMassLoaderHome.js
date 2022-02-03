@@ -46,8 +46,6 @@ export default class MagicMassLoaderHome extends LightningElement {
     @wire(getConfigs)
     wiredConfig({ error, data }) {
         if (data) {
-            console.log('error => ', JSON.stringify(error));
-            console.log('result => ', JSON.stringify(data));
             this.objectsAllowed = data;
         } else if (error) {
             this.error = error;
