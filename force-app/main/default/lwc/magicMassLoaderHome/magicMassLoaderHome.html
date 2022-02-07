@@ -2,7 +2,7 @@
 
         <lightning-card variant="Narrow"  title="Magic Mass Loader" icon-name="standard:account">
             <div class="main">
-                <template if:true={objectsAllowed}>
+                <template if:false={noObjectConfigured}>
                     <lightning-combobox
                         name="Object"
                         label="Object"
@@ -13,16 +13,20 @@
                         class="inputObjects" >
                     </lightning-combobox>
                 </template>
+                <template if:true={noObjectConfigured}>
+                    No active allowed objects were found in the configuration. Please contact your admin 
+                </template>
 
-                <lightning-input type="file" 
-                                    label="Attachment" 
-                                    required 
-                                    message-when-value-missing="Please upload a file"
-                                    onchange={cacheUploadData}
-                                    accept=".txt, .csv"
-                >
-                </lightning-input>
-
+                <template if:true={targetObject}>
+                    <lightning-input type="file" 
+                                        label="Attachment" 
+                                        required 
+                                        message-when-value-missing="Please upload a file"
+                                        onchange={cacheUploadData}
+                                        accept=".txt, .csv"
+                    >
+                    </lightning-input>
+                </template>
                 <template if:true={loading}>
                     <p>Loading</p>
                     <lightning-progress-ring value={progress} variant="active-step"> </lightning-progress-ring>

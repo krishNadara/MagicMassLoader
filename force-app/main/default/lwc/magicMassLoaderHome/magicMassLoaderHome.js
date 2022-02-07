@@ -12,6 +12,7 @@ export default class MagicMassLoaderHome extends LightningElement {
     }
 
     targetObject
+    noObjectConfigured
     loading
     progress
     loadResult
@@ -47,6 +48,9 @@ export default class MagicMassLoaderHome extends LightningElement {
     wiredConfig({ error, data }) {
         if (data) {
             this.objectsAllowed = data;
+            if(data.length == 0) {
+                this.noObjectConfigured = true;
+            } 
         } else if (error) {
             this.error = error;
             console.error('error => ', error); // error handling
