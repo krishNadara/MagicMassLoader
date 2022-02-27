@@ -1,59 +1,82 @@
 <template>
+    <div class="main">
+        <lightning-card variant="Narrow"  title="Magic Mass Loader" icon-name="standard:account" class="card">
 
-        <lightning-card variant="Narrow"  title="Magic Mass Loader" icon-name="standard:account">
-            <div class="main">
-                <template if:false={noObjectConfigured}>
-                    <lightning-combobox
-                        name="Object"
-                        label="Object"
-                        value={value}
-                        placeholder="Select an Object"
-                        options={objectsAllowed}
-                        onchange={handleChange}
-                        class="inputObjects" >
-                    </lightning-combobox>
+                <lightning-progress-indicator current-step={selectedStep} type="path">
+                    <lightning-progress-step label="Welcome To MassBuilder !" value="step1"></lightning-progress-step>
+                    <lightning-progress-step label="Select the Object" value="step2"></lightning-progress-step>
+                    <lightning-progress-step label="Upload File/Review Result" value="step3"></lightning-progress-step>
+                    <lightning-progress-step label="Start the Magic" value="step4"></lightning-progress-step>
+                </lightning-progress-indicator>
+                <template if:true={showSelObj}>
+                    <template if:false={noObjectConfigured}>
+                        <lightning-combobox
+                            name="Object"
+                            label="Object"
+                            value={value}
+                            placeholder="Select an Object"
+                            options={objectsAllowed}
+                            onchange={handleChange}
+                            class="inputObjects" >
+                        </lightning-combobox>
+                    </template>
+                    <template if:true={noObjectConfigured}>
+                        No active allowed objects were found in the configuration. Please contact your admin 
+                    </template>
                 </template>
-                <template if:true={noObjectConfigured}>
-                    No active allowed objects were found in the configuration. Please contact your admin 
-                </template>
+                <template if:true={showUpFile}>
+                    <template if:true={targetObject}>
+                        <lightning-input type="file" 
+                                            label="Attachment" 
+                                            required 
+                                            message-when-value-missing="Please upload a file"
+                                            onchange={cacheUploadData}
+                                            accept=".txt, .csv"
+                        >
+                        </lightning-input>
+                    </template>
+                    <template if:true={loading}>
+                        <p>Loading</p>
+                        <lightning-progress-ring value={progress} variant="active-step"> </lightning-progress-ring>
+                    </template>
 
-                <template if:true={targetObject}>
-                    <lightning-input type="file" 
-                                        label="Attachment" 
-                                        required 
-                                        message-when-value-missing="Please upload a file"
-                                        onchange={cacheUploadData}
-                                        accept=".txt, .csv"
-                    >
-                    </lightning-input>
+                    <template if:true={uploadData}>
+                        <div class="dataSummary">
+                            <p class="fileSummaryLabel">File Summary</p>
+                            <p>{uploadData.filename}</p>
+                            <p>Num of lines : {uploadData.numOfLines}</p>
+                            <p>&nbsp;</p>
+                        </div>
+                    </template>
                 </template>
-                <template if:true={loading}>
-                    <p>Loading</p>
-                    <lightning-progress-ring value={progress} variant="active-step"> </lightning-progress-ring>
+                <template if:true={showStartMagic}>
+                    <template if:true={uploadData}>
+                        <template if:true={startRolling}>
+                            <lightning-button label="Start Rolling" title="Start Rolling" onclick={startUpload} class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                    </template>
+
+                    <template if:true={loadResult}>
+                        <div class="uploadSummary">
+                            <p class="fileSummaryLabel">Records Processed : {loadResult.linesProcessed}</p>
+                            <p>Success : {loadResult.numSuccess}</p>
+                            <p>Errors : {loadResult.numFailure}</p>
+                            <p>&nbsp;</p>
+                        </div>
+                    </template>
                 </template>
-
-                <template if:true={uploadData}>
-                    <div class="dataSummary">
-                        <p class="fileSummaryLabel">File Summary</p>
-                        <p>{uploadData.filename}</p>
-                        <p>Num of lines : {uploadData.numOfLines}</p>
-                        <p>&nbsp;</p>
-                    </div>
-
-                    <template if:true={startRolling}>
-                        <lightning-button label="Start Rolling" title="Start Rolling" onclick={startUpload} class="slds-m-left_x-small"></lightning-button>
+                <template if:true={showReviewMagic}>
+                    <template if:true={loadResult}>
+                        <div class="uploadSummary">
+                            <p class="fileSummaryLabel">Records Processed : {loadResult.linesProcessed}</p>
+                            <p>Success : {loadResult.numSuccess}</p>
+                            <p>Errors : {loadResult.numFailure}</p>
+                            <p>&nbsp;</p>
+                        </div>
                     </template>
                 </template>
 
-                <template if:true={loadResult}>
-                    <div class="uploadSummary">
-                        <p class="fileSummaryLabel">Records Processed : {loadResult.linesProcessed}</p>
-                        <p>Success : {loadResult.numSuccess}</p>
-                        <p>Errors : {loadResult.numFailure}</p>
-                        <p>&nbsp;</p>
-                    </div>
-                </template>
-            </div>
         </lightning-card>
-
+    </div>
+    <lightning-button label="Next step" onclick={nextStep}></lightning-button>
 </template>

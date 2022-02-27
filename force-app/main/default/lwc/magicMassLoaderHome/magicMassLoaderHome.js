@@ -3,9 +3,14 @@ import loadData from '@salesforce/apex/MagicMassLoaderController.loadFileData'
 import getConfigs from '@salesforce/apex/MagicMassLoaderController.getObjectAllowed'
 
 export default class MagicMassLoaderHome extends LightningElement {
+    @track selectedStep = 'step1';
     @api
     myRecordId;
     @track objectsAllowed;
+    @track showSelObj;
+    @track showUpFile;
+    @track showStartMagic;
+    @track showReviewMagic;
 
     get acceptedFormats() {
         return ".txt, .csv";
@@ -71,4 +76,32 @@ export default class MagicMassLoaderHome extends LightningElement {
         })
     }
 
+    nextStep() {
+        if(this.selectedStep == "step1")
+            this.selectedStep = "step2";
+        else if(this.selectedStep == "step2")
+            this.selectedStep = "step3";
+        else if(this.selectedStep == "step3")
+            this.selectedStep = "step4";    
+        else if(this.selectedStep == "step4")
+            this.selectedStep = "step5";  
+        if(this.selectedStep == "step2") {
+            this.showSelObj = true;
+            this.showUpFile = false;
+            this.showStartMagic = false;
+            this.showReviewMagic = false;
+        }
+        if(this.selectedStep == "step3") {
+            this.showSelObj = false;
+            this.showUpFile = true;
+            this.showStartMagic = false;
+            this.showReviewMagic = false;
+        }
+        if(this.selectedStep == "step4") {
+            this.showSelObj = false;
+            this.showUpFile = false;
+            this.showStartMagic = true;
+            this.showReviewMagic = false;
+        }
+    }
 }
